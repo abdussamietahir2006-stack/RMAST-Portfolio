@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
+/* 🌲 FOREST THEME VARIABLES */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* BASE COLORS */
+  --black: #07130f;
+  --black-2: #0b1f18;
+
+  --accent: #52b788;
+  --accent-soft: #74c69d;
+
+  --ivory: #e8f5ec;
+  --ivory-dim: rgba(232, 245, 236, 0.6);
+
+  --border: rgba(200, 255, 220, 0.12);
+
+  /* BACKGROUND SYSTEM */
+  --background: linear-gradient(180deg, #07130f 0%, #0b1f18 100%);
+  --foreground: #e8f5ec;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* 🌙 DARK MODE (keep consistent, not white switch) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: linear-gradient(180deg, #07130f 0%, #0b1f18 100%);
+    --foreground: #e8f5ec;
   }
 }
 
+/* 🧠 TAILWIND THEME BRIDGE */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+/* 🌿 BASE BODY */
 body {
+  margin: 0;
+  padding: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+
+  /* smooth rendering */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 🌫️ GLOBAL SCROLLBAR (forest style) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #07130f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(82, 183, 136, 0.4);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(82, 183, 136, 0.7);
+}
+
+/* ✨ SELECTION COLOR */
+::selection {
+  background: rgba(82, 183, 136, 0.3);
+  color: #e8f5ec;
 }
