@@ -2,49 +2,47 @@
 
 import { motion } from 'framer-motion';
 import { useState, FormEvent } from 'react';
+import toast from 'react-hot-toast';
 
 export default function Newsletter() {
   const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
 
   const handleSubscribe = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (loading) return;
-
     const trimmedEmail = email.trim();
-
     if (!trimmedEmail) {
-      alert('Please enter your email');
+      toast.error('Please enter a valid email');
       return;
     }
-
     setLoading(true);
+    setMessage('');
+    setIsError(false);
 
     try {
       const res = await fetch('/api/subscribers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmedEmail }),
+        body: JSON.stringify({ email: trimmedEmail, source: 'newsletter' }),
       });
 
-      let data: { error?: string } | null = null;
-
-      try {
-        data = await res.json();
-      } catch {
-        data = null;
-      }
-
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
+        setMessage(data.message || "You're subscribed! 🚀");
+        toast.success("You're subscribed! Check your inbox.");
         setEmail('');
-        alert('Subscribed! Check your email.');
       } else {
-        alert(data?.error || 'Failed to subscribe');
+        setMessage(data.error || 'Something went wrong.');
+        toast.error(data.error || 'Failed to subscribe');
+        setIsError(true);
       }
-    } catch (error) {
-      console.error('Newsletter subscription error:', error);
-      alert('Something went wrong. Try again.');
+    } catch (err) {
+      setMessage('Network error. Please try again.');
+      toast.error('Network error. Please try again.');
+      setIsError(true);
     } finally {
       setLoading(false);
     }
@@ -195,6 +193,9 @@ export default function Newsletter() {
             {loading ? 'Subscribing...' : 'Subscribe'}
           </motion.button>
         </motion.form>
+        {message && (
+          <p style={{ textAlign: 'center', marginTop: 8, color: isError ? '#ff6b6b' : '#52b788' }}>{message}</p>
+        )}
       </motion.div>
     </section>
   );

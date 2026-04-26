@@ -2,6 +2,7 @@
 
 import { useRef, useState, FormEvent } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const services = ['Web Development', 'UI/UX Design', '3D Expert', 'AI Automations', 'Multiple Services'];
 
@@ -184,18 +185,29 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
     setLoading(true);
     try {
-      const res = await fetch('/api/leads', {
+      const res = await fetch('/api/contacts', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
+      const data = await res.json();
       if (res.ok) {
         setSubmitted(true);
         setForm({ name: '', email: '', phone: '', service: '', message: '' });
+        toast.success("Message sent! I'll get back to you soon.");
         setTimeout(() => setSubmitted(false), 4000);
+      } else {
+        toast.error(data.error || "Failed to send message");
       }
-    } catch (e) { console.error(e); }
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.");
+      console.error(err);
+    }
     finally { setLoading(false); }
   };
 

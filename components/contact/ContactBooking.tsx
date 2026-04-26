@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 type Step = 1 | 2 | 3;
 
@@ -196,14 +197,17 @@ export default function ContactBooking() {
   const [step, setStep] = useState<Step>(1);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', reason: '' });
+  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', service: '', reason: '' });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const times = ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM', '7:00 PM'];
 
   const handleSubmit = async () => {
-    if (!form.name || !form.email) return;
+    if (!form.name || !form.email) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch('/api/bookings', {
@@ -211,15 +215,22 @@ export default function ContactBooking() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, date, time }),
       });
+      const data = await res.json();
       if (res.ok) {
         setSubmitted(true);
+        toast.success("Booking confirmed! I'll reach out within 24 hours.");
         setTimeout(() => {
           setStep(1); setDate(''); setTime('');
-          setForm({ name: '', email: '', whatsapp: '', reason: '' });
+          setForm({ name: '', email: '', whatsapp: '', service: '', reason: '' });
           setSubmitted(false);
         }, 3500);
+      } else {
+        toast.error(data.error || "Failed to confirm booking");
       }
-    } catch (e) { console.error(e); }
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.");
+      console.error(err);
+    }
     finally { setLoading(false); }
   };
 
@@ -380,6 +391,7 @@ export default function ContactBooking() {
                   <AnimInput label="Full Name" value={form.name} onChange={v => setForm(f => ({ ...f, name: v }))} placeholder="Raja Muhammad..." delay={0.05} />
                   <AnimInput label="Email" value={form.email} onChange={v => setForm(f => ({ ...f, email: v }))} placeholder="you@example.com" type="email" delay={0.1} />
                   <AnimInput label="WhatsApp (optional)" value={form.whatsapp} onChange={v => setForm(f => ({ ...f, whatsapp: v }))} placeholder="+92 300 000 0000" delay={0.15} />
+                  <AnimInput label="Service Needed" value={form.service} onChange={v => setForm(f => ({ ...f, service: v }))} placeholder="Web Development, UI/UX, etc." delay={0.2} />
 
                   <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} style={{ marginBottom: 28 }}>
                     <label style={{ display: 'block', color: 'rgba(232,245,236,0.35)', fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 8 }}>About Your Project</label>

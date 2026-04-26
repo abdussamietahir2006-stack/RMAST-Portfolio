@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, type Variants } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 
 /* ─── SERVICES DATA ─── */
 const SERVICES = [
@@ -221,7 +221,7 @@ function ServiceCard({ s, i }: { s: typeof SERVICES[0]; i: number }) {
 
   return (
     <motion.div variants={cardVariants} initial="hidden" whileInView="visible"
-      viewport={{ once: false, margin: '-50px' }}
+      viewport={{ once: true, margin: '-50px' }}
       style={{ perspective: '1200px' }}
     >
       <motion.div
@@ -470,14 +470,16 @@ function ConnectorLines() {
 
 /* ─── AMBIENT ENERGY BLOBS ─── */
 function EnergyBlobs() {
+  const blobs = useMemo(() => [
+    { x: '-5%', y: '10%', color: 'rgba(0,255,179,0.07)', size: 500, dur: 22 },
+    { x: '70%', y: '-5%', color: 'rgba(123,97,255,0.06)', size: 450, dur: 28 },
+    { x: '30%', y: '70%', color: 'rgba(255,107,53,0.05)', size: 400, dur: 20 },
+    { x: '80%', y: '60%', color: 'rgba(255,221,0,0.05)', size: 380, dur: 25 },
+  ], []);
+
   return (
     <>
-      {[
-        { x: '-5%', y: '10%', color: 'rgba(0,255,179,0.07)', size: 500, dur: 22 },
-        { x: '70%', y: '-5%', color: 'rgba(123,97,255,0.06)', size: 450, dur: 28 },
-        { x: '30%', y: '70%', color: 'rgba(255,107,53,0.05)', size: 400, dur: 20 },
-        { x: '80%', y: '60%', color: 'rgba(255,221,0,0.05)', size: 380, dur: 25 },
-      ].map((b, i) => (
+      {blobs.map((b, i) => (
         <motion.div key={i}
           animate={{ scale: [1, 1.25, 0.9, 1], x: [0, 40, -20, 0], y: [0, -30, 20, 0] }}
           transition={{ duration: b.dur, repeat: Infinity, ease: 'easeInOut', delay: i * 2 }}
@@ -552,13 +554,13 @@ export default function ServicesPreview() {
 
       {/* ── HEADER ── */}
       <motion.div variants={headerVariants} initial="hidden" whileInView="visible"
-        viewport={{ once: false }}
+        viewport={{ once: true }}
         style={{ textAlign: 'center', maxWidth: '760px', margin: '0 auto 7rem', position: 'relative', zIndex: 2 }}
       >
         {/* Eyebrow pill */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false }} transition={{ duration: 0.6 }}
+          viewport={{ once: true }} transition={{ duration: 0.6 }}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '10px',
             background: 'rgba(82,183,136,0.06)', border: '1px solid rgba(82,183,136,0.18)',
@@ -619,7 +621,7 @@ export default function ServicesPreview() {
       {/* ── BOTTOM CTA ── */}
       <motion.div
         initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false }} transition={{ duration: 0.7, delay: 0.4 }}
+        viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.4 }}
         style={{ textAlign: 'center', marginTop: '6rem', position: 'relative', zIndex: 2 }}
       >
         {/* Decorative divider */}
